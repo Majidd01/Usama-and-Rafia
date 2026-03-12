@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
       envelopeOverlay.classList.add('hidden');
       document.body.classList.remove('no-scroll');
       mainContent.classList.add('visible');
+      startContinuousPetals(); // Start the background falling flowers
     }, 2500);
   }
 
@@ -259,69 +260,78 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ===================================
-  // FLOWER SHOWER
+  // FLOWER SHOWER & CONTINUOUS PETALS
   // ===================================
+  const petalColors = [
+    '#f5c6d0', '#f7d1d9', '#fce4ec', '#f8bbd0',
+    '#e8b4b8', '#f0c0c8', '#fdd5e0', '#f9e0e6',
+    '#c45b6e', '#d4778a', '#e89ca8', '#f2b5bf',
+    '#daa0a6', '#c9a84c', '#e8d5a3', '#ffffff', 
+    '#ffd700', '#ffeb3b', '#ffc107', '#fff8dc'
+  ];
+
+  function createSinglePetal(container, isInitialBurst = false) {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+
+    const size = Math.random() * (isInitialBurst ? 20 : 15) + 8;
+    const left = Math.random() * 100;
+    const duration = Math.random() * 5 + 5; // 5 to 10 seconds falling
+    const delay = isInitialBurst ? Math.random() * 2 : 0;
+    const drift = (Math.random() - 0.5) * 300; 
+    const rotation = Math.random() * 720 - 360;
+    const color = petalColors[Math.floor(Math.random() * petalColors.length)];
+
+    petal.style.cssText = `
+      width: ${size}px;
+      height: ${size * 1.3}px;
+      left: ${left}%;
+      top: -10%;
+      background: ${color};
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      position: fixed;
+    `;
+
+    container.appendChild(petal);
+
+    petal.animate([
+      { transform: `translateX(0) rotate(0deg) scale(0.5)`, opacity: 0 },
+      { opacity: 0.8, offset: 0.1 },
+      { opacity: 0.7, offset: 0.9 },
+      { transform: `translate(${drift}px, 120vh) rotate(${rotation}deg) scale(1)`, opacity: 0 }
+    ], {
+      duration: duration * 1000,
+      delay: delay * 1000,
+      fill: 'forwards',
+      easing: 'linear'
+    });
+
+    setTimeout(() => petal.remove(), (duration + delay) * 1000 + 100);
+  }
+
   function triggerFlowerShower() {
     const container = document.getElementById('flower-shower');
     container.style.display = 'block';
 
-    const petalColors = [
-      '#f5c6d0', '#f7d1d9', '#fce4ec', '#f8bbd0',
-      '#e8b4b8', '#f0c0c8', '#fdd5e0', '#f9e0e6',
-      '#c45b6e', '#d4778a', '#e89ca8', '#f2b5bf',
-      '#daa0a6', '#c9a84c', '#e8d5a3', '#ffffff', 
-      '#ffd700', '#ffeb3b', '#ffc107', '#fff8dc'
-    ];
-
-    const totalPetals = 250;
-
+    const totalPetals = 200;
     for (let i = 0; i < totalPetals; i++) {
-        const petal = document.createElement('div');
-        petal.className = 'petal';
-
-        const size = Math.random() * 20 + 10;
-        const left = Math.random() * 100;
-        const duration = Math.random() * 5 + 4; // 4 to 9 seconds falling
-        const delay = Math.random() * 2;
-        const drift = (Math.random() - 0.5) * 200; // Drift left or right
-        const rotation = Math.random() * 720 - 360;
-        const color = petalColors[Math.floor(Math.random() * petalColors.length)];
-
-        petal.style.cssText = `
-          width: ${size}px;
-          height: ${size * 1.3}px;
-          left: ${left}%;
-          top: -10%;
-          background: ${color};
-          opacity: 0;
-          pointer-events: none; /* remove hover since they fall away now */
-          z-index: 100;
-        `;
-
-        container.appendChild(petal);
-
-        // Falling animation
-        petal.animate([
-          { transform: `translateX(0) rotate(0deg) scale(0.5)`, opacity: 0 },
-          { opacity: 0.9, offset: 0.1 },
-          { opacity: 0.8, offset: 0.9 },
-          { transform: `translate(${drift}px, 120vh) rotate(${rotation}deg) scale(1)`, opacity: 0 }
-        ], {
-          duration: duration * 1000,
-          delay: delay * 1000,
-          fill: 'forwards',
-          easing: 'linear'
-        });
-
-        // Remove petal after it falls
-        setTimeout(() => petal.remove(), (duration + delay) * 1000 + 100);
-
+        createSinglePetal(container, true);
     }
+  }
 
-    // Hide container after all petals are done falling
-    setTimeout(() => {
-      container.style.display = 'none';
-    }, 12000);
+  function startContinuousPetals() {
+    const container = document.getElementById('flower-shower');
+    container.style.display = 'block';
+
+    // Spawn 2-3 petals every 600ms
+    setInterval(() => {
+      const count = Math.floor(Math.random() * 2) + 2; // 2 or 3
+      for (let i = 0; i < count; i++) {
+        createSinglePetal(container, false);
+      }
+    }, 600);
   }
 
   // ===================================
