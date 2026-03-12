@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         total++;
         if (imageData.data[i] === 0) transparent++;
       }
-      if (transparent / total > 0.20) {
+      if (transparent / total > 0.10) {
         hasRevealed = true;
         // Fade out perfectly
         canvas.style.transition = 'opacity 0.6s ease';
