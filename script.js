@@ -50,6 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add opened class — flaps fold open via CSS transitions
     envelopeWrapper.classList.add('opened');
 
+    // Force videos to play on user interaction (fixes mobile autoplay issues)
+    const videos = document.querySelectorAll('.hero-video');
+    videos.forEach(video => {
+      video.play().catch(e => console.log("Video autoplay blocked:", e));
+    });
+
     // After animation (2.5s), transition to hide overlay
     setTimeout(() => {
       envelopeOverlay.classList.add('hidden');
