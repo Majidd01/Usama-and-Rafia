@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, observerOptions);
 
-  document.querySelectorAll('.reveal-section, .venue-section').forEach(el => {
+  document.querySelectorAll('.reveal-section, .venue-section, .rsvp-section-full').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
